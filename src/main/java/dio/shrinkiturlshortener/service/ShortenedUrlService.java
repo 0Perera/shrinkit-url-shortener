@@ -8,6 +8,7 @@ import dio.shrinkiturlshortener.mapper.ShortenedUrlMapper;
 import dio.shrinkiturlshortener.repository.ShortenedUrlRepository;
 import io.seruco.encoding.base62.Base62;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,6 +40,7 @@ public class ShortenedUrlService {
         return shortenedUrlMapper.toResponse(savedEntity);
     }
 
+    @Cacheable(cacheNames = "urls", key = "#hashUrl")
     public ShortenedUrlResponse findUrlByHash(String hashUrl) {
        ShortenedUrl urlEntity = shortenedUrlRepository.findShortenedUrlByHashUrl(hashUrl)
                .orElseThrow(() -> new NotFoundException("Url não encontrada"));

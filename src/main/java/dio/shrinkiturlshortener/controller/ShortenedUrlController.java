@@ -3,6 +3,7 @@ package dio.shrinkiturlshortener.controller;
 import dio.shrinkiturlshortener.dto.ShortenedUrlRequest;
 import dio.shrinkiturlshortener.dto.ShortenedUrlResponse;
 import dio.shrinkiturlshortener.service.ShortenedUrlService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,7 @@ public class ShortenedUrlController {
     }
 
     @PostMapping("/shorten")
-    public ResponseEntity<ShortenedUrlResponse> createShortenedUrl(@RequestBody ShortenedUrlRequest shortenedUrlRequest) {
+    public ResponseEntity<ShortenedUrlResponse> createShortenedUrl(@Valid @RequestBody ShortenedUrlRequest shortenedUrlRequest) {
         var response = shortenedUrlService.createShortenedUrl(shortenedUrlRequest);
         return ResponseEntity.ok().body(response);
     }
