@@ -29,6 +29,4 @@ public class ShortenedUrlController {
         return ResponseEntity.status(HttpStatus.FOUND).header("Location", response.url()).build();
     }
 
-
-
 }
