@@ -20,7 +20,7 @@ public class ShortenedUrlController {
     @PostMapping("/shorten")
     public ResponseEntity<ShortenedUrlResponse> createShortenedUrl(@Valid @RequestBody ShortenedUrlRequest shortenedUrlRequest) {
         var response = shortenedUrlService.createShortenedUrl(shortenedUrlRequest);
-        return ResponseEntity.ok().body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/{hash}")
