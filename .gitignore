@@ -34,3 +34,6 @@ build/
 
 ### Claude ###
 CLAUDE.md
+
+### Tailwind ###
+bin/tailwindcss
