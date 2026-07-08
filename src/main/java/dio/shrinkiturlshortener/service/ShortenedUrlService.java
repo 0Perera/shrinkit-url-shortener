@@ -24,7 +24,7 @@ public class ShortenedUrlService {
         this.shortenedUrlMapper = shortenedUrlMapper;
     }
 
-    private String generateHash(ShortenedUrl shortenedUrl){
+    private static String generateHash(ShortenedUrl shortenedUrl){
         Long id = shortenedUrl.getId();
         Base62 base62 = Base62.createInstance();
         final byte[] hash = base62.encode(id.toString().getBytes());
@@ -37,6 +37,7 @@ public class ShortenedUrlService {
         var savedEntity = shortenedUrlRepository.save(entity);
         var hashUrl = generateHash(savedEntity);
         savedEntity.setHashUrl(hashUrl);
+        shortenedUrlRepository.save(savedEntity);
         return shortenedUrlMapper.toResponse(savedEntity);
     }
 

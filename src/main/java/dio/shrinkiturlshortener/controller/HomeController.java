@@ -8,8 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class HomeController {
 
     @GetMapping("/")
-    public String index(Model model) {
-        model.addAttribute("message", "ShrinkIt está de pé!");
+    public String index() {
         return "index";
     }
 

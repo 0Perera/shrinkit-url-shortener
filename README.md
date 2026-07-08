@@ -33,6 +33,7 @@ O principal objetivo desta aplicação não é apenas ser mais um encurtador de 
 - **Validação:** Jakarta Validation (`@NotBlank`, `@URL`)
 - **Frontend:** Thymeleaf + Tailwind CSS
 - **Testes:** JUnit 5, Mockito e Spring MockMvc
+- **Infraestrutura local:** Docker Compose (PostgreSQL)
 
 ---
 
@@ -71,7 +72,7 @@ O principal objetivo desta aplicação não é apenas ser mais um encurtador de 
 ### Pré-requisitos
 - Java 21+
 - Maven (opcional — o projeto usa o wrapper `mvnw`)
-- PostgreSQL (apenas para rodar em modo produção — o ambiente de desenvolvimento usa H2 em memória)
+- Docker e Docker Compose (para subir o PostgreSQL localmente — só necessário para rodar em modo produção; o ambiente de desenvolvimento usa H2 em memória)
 
 ### Passos
 
@@ -80,20 +81,33 @@ O principal objetivo desta aplicação não é apenas ser mais um encurtador de 
 git clone https://github.com/0Perera/shrinkit-url-shortener
 ```
 
-**2.** (Produção) Configure as variáveis de ambiente:
+**2.** (Produção) Crie um arquivo `.env` na raiz do projeto com as credenciais do PostgreSQL usadas pelo `docker-compose.yml`:
+
+| Variável | Descrição |
+|----------|-----------|
+| `DB_NAME` | Nome do banco de dados |
+| `DB_USER` | Usuário do banco |
+| `DB_PASSWORD` | Senha do banco |
+
+**3.** (Produção) Suba o PostgreSQL via Docker Compose:
+```bash
+docker compose up -d
+```
+
+**4.** (Produção) Configure as variáveis de ambiente lidas pela aplicação Spring:
 
 | Variável | Descrição |
 |----------|-----------|
 | `DB_URL` | URL JDBC do PostgreSQL (ex: `jdbc:postgresql://localhost:5432/shrinkit`) |
-| `DB_USER` | Usuário do banco |
-| `DB_PASSWORD` | Senha do banco |
+| `DB_USER` | Usuário do banco (mesmo valor do `.env`) |
+| `DB_PASSWORD` | Senha do banco (mesmo valor do `.env`) |
 
-**3.** Inicie a aplicação:
+**5.** Inicie a aplicação:
 ```bash
 ./mvnw spring-boot:run
 ```
 
-**4.** A aplicação estará disponível em `http://localhost:8080` e o H2 Console em `http://localhost:8080/h2-console`.
+**6.** A aplicação estará disponível em `http://localhost:8080` e o H2 Console em `http://localhost:8080/h2-console`.
 
 ---
 
