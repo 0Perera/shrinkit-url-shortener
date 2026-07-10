@@ -1,0 +1,5 @@
+CREATE TABLE shortened_url (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    url VARCHAR(2048),
+    hash_url VARCHAR(255)
+);
