@@ -1,0 +1,1 @@
+ALTER TABLE shortened_url ADD CONSTRAINT unique_hash_url UNIQUE (hash_url);

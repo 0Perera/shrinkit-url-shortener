@@ -20,5 +20,6 @@ public class ShortenedUrl {
 
     private String url;
 
+    @Column(unique = true)
     private String hashUrl;
 }
