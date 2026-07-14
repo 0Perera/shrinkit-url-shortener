@@ -26,6 +26,7 @@ O principal objetivo desta aplicação não é apenas ser mais um encurtador de 
 - **Linguagem:** Java 21
 - **Framework Principal:** Spring Boot 4.0.6
 - **Persistência de Dados:** Spring Data JPA, Hibernate, PostgreSQL (produção) e H2 (desenvolvimento/testes)
+- **Versionamento de Schema:** Flyway
 - **Cache:** Spring Cache + Caffeine
 - **Segurança:** Spring Security (boilerplate) + Bucket4j (rate limiting por IP)
 - **Mapeamento de Objetos:** MapStruct (Entity ↔ DTO)
@@ -42,8 +43,10 @@ O principal objetivo desta aplicação não é apenas ser mais um encurtador de 
 - **Arquitetura em Camadas:** Divisão clara entre `Controller` (camada web), `Service` (regras de negócio) e `Repository` (acesso a dados).
 - **Padrão DTO:** Implementado com `Records` do Java para imutabilidade e tráfego seguro de dados, sem expor entidades do banco na web.
 - **Cache de leitura:** `ShortenedUrlService.findUrlByHash()` é anotado com `@Cacheable` no cache `urls`, evitando consultas repetidas ao banco para os hashes mais acessados (máximo 20 entradas, TTL de 10 minutos, eviction LRU).
+- **Migrations versionadas:** Schema gerenciado via Flyway (`src/main/resources/db/migration`), com `ddl-auto=validate` garantindo que a aplicação só sobe se o schema do banco bater com o mapeamento das entidades.
+- **Contador de acessos sem furar o cache:** Como `findUrlByHash()` é `@Cacheable`, seu corpo não executa em cache HIT, então incrementar o contador ali dentro contaria só os MISS. O `ShortenedUrlAccessOrchestrator` resolve isso chamando a busca cacheada e o incremento como duas invocações externas ao `Service` (evitando também o problema de auto-invocação do proxy Spring AOP), garantindo contagem em toda requisição.
 - **Rate Limiting por IP:** O `IpRateLimitInterceptor` mantém um `Bucket` (Bucket4j) por endereço IP, com capacidade de 20 tokens e reabastecimento de 1 token a cada 40 segundos. Excedido o limite, responde `429 Too Many Requests`.
-- **Tratamento Global de Exceções:** O `@RestControllerAdvice` (`GlobalExceptionHandler`) mapeia exceções de domínio para respostas HTTP corretas — `NotFoundException` → 404, falhas de validação (`MethodArgumentNotValidException`) → 400.
+- **Tratamento Global de Exceções:** O `@RestControllerAdvice` (`GlobalExceptionHandler`) mapeia exceções de domínio para respostas HTTP corretas: `NotFoundException` → 404, falhas de validação (`MethodArgumentNotValidException`) → 400.
 - **Conformidade REST:** Verbos HTTP corretos e status codes assertivos (`201 Created`, `302 Found`).
 - **Cobertura de Testes:** `@WebMvcTest` para controllers, `@DataJpaTest` para repositórios e `@MockitoBean` para isolar a unidade testada nos testes de serviço, com H2 em memória.
 
@@ -71,8 +74,8 @@ O principal objetivo desta aplicação não é apenas ser mais um encurtador de 
 
 ### Pré-requisitos
 - Java 21+
-- Maven (opcional — o projeto usa o wrapper `mvnw`)
-- Docker e Docker Compose (para subir o PostgreSQL localmente — só necessário para rodar em modo produção; o ambiente de desenvolvimento usa H2 em memória)
+- Maven (opcional, o projeto usa o wrapper `mvnw`)
+- Docker e Docker Compose (para subir o PostgreSQL localmente, só necessário para rodar em modo produção; o ambiente de desenvolvimento usa H2 em memória)
 
 ### Passos
 
@@ -113,7 +116,7 @@ docker compose up -d
 
 ## Como rodar os testes
 
-Os testes usam o perfil `test` com H2 em memória — nenhuma variável de ambiente de banco é necessária.
+Os testes usam o perfil `test` com H2 em memória. Nenhuma variável de ambiente de banco é necessária.
 
 ```bash
 # Todos os testes
