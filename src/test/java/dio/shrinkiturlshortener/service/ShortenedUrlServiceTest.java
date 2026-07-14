@@ -16,8 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ShortenedUrlServiceTest {
@@ -68,7 +67,7 @@ class ShortenedUrlServiceTest {
 
         assertEquals(expectedResponse, result);
         verify(shortenedUrlMapper).toEntity(shortenedUrlRequest);
-        verify(shortenedUrlRepository).save(shortenedUrl);
+        verify(shortenedUrlRepository, times(2)).save(shortenedUrl);
         verify(shortenedUrlMapper).toResponse(shortenedUrl);
     }
 
