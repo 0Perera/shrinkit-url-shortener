@@ -2,6 +2,7 @@ package dio.shrinkiturlshortener.controller;
 
 import dio.shrinkiturlshortener.dto.ShortenedUrlRequest;
 import dio.shrinkiturlshortener.dto.ShortenedUrlResponse;
+import dio.shrinkiturlshortener.service.ShortenedUrlAccessOrchestrator;
 import dio.shrinkiturlshortener.service.ShortenedUrlService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -12,9 +13,11 @@ import org.springframework.web.bind.annotation.*;
 public class ShortenedUrlController {
 
     private final ShortenedUrlService shortenedUrlService;
+    private final ShortenedUrlAccessOrchestrator shortenedUrlAccessOrchestrator;
 
-    public ShortenedUrlController(ShortenedUrlService shortenedUrlService) {
+    public ShortenedUrlController(ShortenedUrlService shortenedUrlService, ShortenedUrlAccessOrchestrator shortenedUrlAccessOrchestrator) {
         this.shortenedUrlService = shortenedUrlService;
+        this.shortenedUrlAccessOrchestrator = shortenedUrlAccessOrchestrator;
     }
 
     @PostMapping("/shorten")
@@ -25,7 +28,7 @@ public class ShortenedUrlController {
 
     @GetMapping("/{hash}")
     public ResponseEntity<Void> redirectByHash(@PathVariable String hash) {
-        var response = shortenedUrlService.findUrlByHash(hash);
+        var response = shortenedUrlAccessOrchestrator.findAndCountAccess(hash);
         return ResponseEntity.status(HttpStatus.FOUND).header("Location", response.url()).build();
     }
 

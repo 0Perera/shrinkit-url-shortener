@@ -1,0 +1,1 @@
+ALTER TABLE shortened_url ADD COLUMN access_count INT DEFAULT 0 NOT NULL;

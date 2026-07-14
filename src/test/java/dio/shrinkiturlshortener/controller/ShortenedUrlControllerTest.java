@@ -3,6 +3,7 @@ package dio.shrinkiturlshortener.controller;
 import dio.shrinkiturlshortener.dto.ShortenedUrlRequest;
 import dio.shrinkiturlshortener.dto.ShortenedUrlResponse;
 import dio.shrinkiturlshortener.handler.NotFoundException;
+import dio.shrinkiturlshortener.service.ShortenedUrlAccessOrchestrator;
 import dio.shrinkiturlshortener.service.ShortenedUrlService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,6 +38,9 @@ class ShortenedUrlControllerTest {
 
     @MockitoBean
     ShortenedUrlService shortenedUrlService;
+
+    @MockitoBean
+    ShortenedUrlAccessOrchestrator shortenedUrlAccessOrchestrator;
 
     private ShortenedUrlRequest createDefaultRequest() {
         return new ShortenedUrlRequest(DEFAULT_URL);
@@ -89,7 +93,7 @@ class ShortenedUrlControllerTest {
     @Test
     @DisplayName("Deve retornar 302 Found e redirecionar para URL original ao acessar a URL encurtada com hash válido")
     void redirectByHashCase1() throws Exception {
-        when(shortenedUrlService.findUrlByHash(DEFAULT_HASH_URL)).thenReturn(createDefaultResponse());
+        when(shortenedUrlAccessOrchestrator.findAndCountAccess(DEFAULT_HASH_URL)).thenReturn(createDefaultResponse());
 
         mockMvc.perform(MockMvcRequestBuilders.get("/" + DEFAULT_HASH_URL))
                 .andExpect(status().isFound())
@@ -100,7 +104,7 @@ class ShortenedUrlControllerTest {
     @Test
     @DisplayName("Deve retornar 404 Not Found ao acessar a URL encurtada com hash inválido")
     void redirectByHashCase2() throws Exception {
-        when(shortenedUrlService.findUrlByHash(DEFAULT_HASH_URL_NOT_FOUND)).thenThrow(new NotFoundException("URL não encontrada"));
+        when(shortenedUrlAccessOrchestrator.findAndCountAccess(DEFAULT_HASH_URL_NOT_FOUND)).thenThrow(new NotFoundException("URL não encontrada"));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/" + DEFAULT_HASH_URL_NOT_FOUND))
                 .andExpect(status().isNotFound())

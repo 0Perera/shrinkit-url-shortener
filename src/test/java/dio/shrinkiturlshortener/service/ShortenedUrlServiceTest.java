@@ -96,4 +96,26 @@ class ShortenedUrlServiceTest {
         verify(shortenedUrlRepository).findShortenedUrlByHashUrl(DEFAULT_HASH_URL_NOT_FOUND);
     }
 
+    @Test
+    @DisplayName("Deve incrementar o contador de acessos e retornar a quantidade de linhas afetadas")
+    void incrementAccessCountByHashUrlCase1() {
+        when(shortenedUrlRepository.incrementAccessCountByHash(DEFAULT_HASH_URL)).thenReturn(1);
+
+        int result = shortenedUrlService.incrementAccessCountByHashUrl(DEFAULT_HASH_URL);
+
+        assertEquals(1, result);
+        verify(shortenedUrlRepository).incrementAccessCountByHash(DEFAULT_HASH_URL);
+    }
+
+    @Test
+    @DisplayName("Deve retornar 0 ao tentar incrementar o contador de um hash inexistente")
+    void incrementAccessCountByHashUrlCase2() {
+        when(shortenedUrlRepository.incrementAccessCountByHash(DEFAULT_HASH_URL_NOT_FOUND)).thenReturn(0);
+
+        int result = shortenedUrlService.incrementAccessCountByHashUrl(DEFAULT_HASH_URL_NOT_FOUND);
+
+        assertEquals(0, result);
+        verify(shortenedUrlRepository).incrementAccessCountByHash(DEFAULT_HASH_URL_NOT_FOUND);
+    }
+
 }

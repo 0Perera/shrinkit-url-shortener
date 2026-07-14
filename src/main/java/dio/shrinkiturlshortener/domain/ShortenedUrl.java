@@ -22,4 +22,7 @@ public class ShortenedUrl {
 
     @Column(unique = true)
     private String hashUrl;
+
+    @Column(columnDefinition = "integer default 0", nullable = false)
+    private int accessCount;
 }

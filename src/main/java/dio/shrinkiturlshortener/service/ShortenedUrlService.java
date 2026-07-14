@@ -48,4 +48,9 @@ public class ShortenedUrlService {
        return shortenedUrlMapper.toResponse(urlEntity);
     }
 
+    @Transactional
+    public int incrementAccessCountByHashUrl(String hashUrl) {
+        return shortenedUrlRepository.incrementAccessCountByHash(hashUrl);
+    }
+
 }

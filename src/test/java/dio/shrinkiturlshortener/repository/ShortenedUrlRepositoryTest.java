@@ -72,4 +72,25 @@ class ShortenedUrlRepositoryTest {
 
         assertFalse(result.isPresent());
     }
+
+    @Test
+    @DisplayName("Deve incrementar o access_count e retornar 1 linha afetada")
+    void incrementAccessCountByHashCase1() {
+        ShortenedUrl created = createShortenedUrl(new ShortenedUrlRequest(DEFAULT_URL));
+
+        int rowsAffected = shortenedUrlRepository.incrementAccessCountByHash(created.getHashUrl());
+        entityManager.clear();
+
+        assertEquals(1, rowsAffected);
+        ShortenedUrl updated = shortenedUrlRepository.findById(created.getId()).orElseThrow();
+        assertEquals(1, updated.getAccessCount());
+    }
+
+    @Test
+    @DisplayName("Deve retornar 0 linhas afetadas ao tentar incrementar um hash inexistente")
+    void incrementAccessCountByHashCase2() {
+        int rowsAffected = shortenedUrlRepository.incrementAccessCountByHash(DEFAULT_HASH_URL_NOT_FOUND);
+
+        assertEquals(0, rowsAffected);
+    }
 }
